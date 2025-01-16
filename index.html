@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controlador del Bot de Discord</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .console {
+            background-color: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Controlador del Bot de Discord</h1>
+    <div class="console" id="console"></div>
+    <input type="text" id="commandInput" placeholder="Escribe un comando...">
+    <button id="sendCommand">Enviar</button>
+
+    <script>
+        const socket = io();
+        const consoleDiv = document.getElementById('console');
+        const commandInput = document.getElementById('commandInput');
+        const sendCommandBtn = document.getElementById('sendCommand');
+
+        // Escuchar mensajes del bot
+        socket.on('botMessage', (message) => {
+            const newMessage = document.createElement('div');
+            newMessage.textContent = message;
+            consoleDiv.appendChild(newMessage);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        });
+
+        // Enviar comandos al backend
+        sendCommandBtn.addEventListener('click', () => {
+            const command = commandInput.value;
+            if (command) {
+                socket.emit('sendCommand', command);
+                const newMessage = document.createElement('div');
+                newMessage.textContent = `Comando enviado: ${command}`;
+                consoleDiv.appendChild(newMessage);
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                commandInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
